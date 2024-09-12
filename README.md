@@ -66,3 +66,40 @@ Solução: O Adapter cria uma interface de compatibilidade entre duas classes qu
             return f"Adapter: (TRANSLATED) {self.adaptee.specific_request()[::-1]}"
 ```
 ->A classe Adapter adapta a interface do Adaptee para ser uma interface compatível com Target,traduzindo a chamada do método specific_request() para o método request(). 
+
+## Padrão Iterator
+O que é o Iterator? O padrão Iterator permite o acesso sequencial aos elementos de um agregado (como uma lista ou coleção) sem expor sua estrutura interna. Ele encapsula o comportamento de iteração sobre uma coleção, permitindo que diferentes tipos de coleções sejam percorridas da mesma maneira.
+
+Problema que resolve: Frequentemente, as classes que contêm agregados (como listas ou coleções) precisam expor suas implementações internas para serem iteradas. O Iterator remove essa necessidade ao fornecer uma interface padrão para a iteração.
+
+Solução: Ele fornece uma interface para iterar sobre uma coleção de objetos, de forma que o cliente não precisa conhecer os detalhes internos da coleção. Com isso, é possível percorrer elementos de diferentes tipos de coleções de forma unificada.
+
+### Exemplificando iterator do código
+```python
+    class ConcreteIterator(Iterator):
+        def __init__(self, collection):
+            self._collection = collection
+            self._position = 0
+
+        def __next__(self):
+            try:
+                value = self._collection[self._position]
+            except IndexError:
+                raise StopIteration()
+            self._position += 1
+            return value
+```
+-> A classe ConcreteIterator implementa a lógica de iteração sobre a coleção self._collection. O método __next__() retorna o próximo elemento e avança a posição; se a posição ultrapassar o tamanho da coleção, levanta uma exceção StopIteration para indicar que a iteração terminou.
+
+```python
+    class ConcreteAggregate(Iterable):
+        def __init__(self):
+            self._items = []
+
+        def add_item(self, item):
+            self._items.append(item)
+
+        def __iter__(self):
+            return ConcreteIterator(self._items)
+```
+-> A classe ConcreteAggregate implementa a interface Iterable e mantém uma coleção de itens. O método __iter__() retorna uma instância do ConcreteIterator, permitindo que o Python utilize automaticamente o comportamento de iteração no for loop.
